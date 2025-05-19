@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# --- Thông số cơ bản ---
 gamma = 1.4                  # Tỉ số nhiệt dung Cp/Cv cho không khí
 r = 8                        # Tỷ số nén V1/V2
 P1 = 1e5                     # Áp suất ban đầu (Pa)
@@ -12,7 +11,6 @@ Cv = 718                     # Nhiệt dung riêng đẳng tích (J/kg.K)
 m = 1                        # Khối lượng khí giả sử (kg)
 RPM = 3000                   # Tốc độ vòng quay (vòng/phút)
 
-# --- Tính các giá trị trung gian ---
 V2 = V1 / r
 T2 = T1 * r**(gamma - 1)
 T4 = T3 * (1 / r)**(gamma - 1)
@@ -20,7 +18,6 @@ P2 = P1 * (V1 / V2)**gamma
 P3 = P2 * (T3 / T2)
 P4 = P3 * (V2 / V1)**gamma
 
-# --- Tính hiệu suất và công suất ---
 Q_in = m * Cv * (T3 - T2)
 Q_out = m * Cv * (T4 - T1)
 W = Q_in - Q_out
@@ -40,11 +37,9 @@ P_34 = P3 * (V2 / V_34)**gamma
 V_41 = np.full(20, V1)
 P_41 = np.linspace(P4, P1, 20)
 
-# Kết hợp toàn bộ chu trình
 V_total = np.concatenate([V_12, V_23, V_34, V_41])
 P_total = np.concatenate([P_12, P_23, P_34, P_41])
 
-# --- Vẽ đồ thị P-V ---
 plt.figure(figsize=(8, 6))
 plt.plot(V_total * 1e6, P_total / 1e5, 'r', linewidth=2)
 plt.title('Chu trình Otto lý tưởng - Đồ thị P-V')
