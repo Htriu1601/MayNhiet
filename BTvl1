@@ -1,55 +1,38 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-gamma = 1.4                  # Tỉ số nhiệt dung Cp/Cv cho không khí
-r = 8                        # Tỷ số nén V1/V2
-P1 = 1e5                     # Áp suất ban đầu (Pa)
-V1 = 0.001                   # Thể tích ban đầu (m^3)
-T1 = 300                     # Nhiệt độ ban đầu (K)
-T3 = 2000                    # Nhiệt độ sau đốt cháy (K)
-Cv = 718                     # Nhiệt dung riêng đẳng tích (J/kg.K)
-m = 1                        # Khối lượng khí giả sử (kg)
-RPM = 3000                   # Tốc độ vòng quay (vòng/phút)
+gamma = 1.4                # Tỷ số Cp/Cv
+r = 8                      # Tỷ số nén
+P1 = 1e5                   # Áp suất ban đầu (Pa)
+V1 = 0.001                 # Thể tích ban đầu (m^3)
+T1 = 300                   # Nhiệt độ ban đầu (K)
+T3 = 2000                  # Nhiệt độ sau khi đốt cháy (K)
+Cv = 718                   # Nhiệt dung riêng đẳng tích (J/kg.K)
+m = 1                      # Khối lượng khí (kg)
 
 V2 = V1 / r
 T2 = T1 * r**(gamma - 1)
 T4 = T3 * (1 / r)**(gamma - 1)
-P2 = P1 * (V1 / V2)**gamma
-P3 = P2 * (T3 / T2)
-P4 = P3 * (V2 / V1)**gamma
 
 Q_in = m * Cv * (T3 - T2)
 Q_out = m * Cv * (T4 - T1)
 W = Q_in - Q_out
 eta = W / Q_in
-power_output = W * (RPM / 60)  # công suất = công mỗi chu kỳ × số chu kỳ/giây
 
-# --- Tạo dữ liệu cho đồ thị P-V ---
-V_12 = np.linspace(V1, V2, 100)
-P_12 = P1 * (V1 / V_12)**gamma
+RPM_values = np.linspace(1000, 8000, 100)  # Vòng/phút
+time_per_cycle = 60 / RPM_values           # Thời gian mỗi chu trình (giây)
+power_output = W / time_per_cycle          # Công suất (Watt)
 
-V_23 = np.full(20, V2)
-P_23 = np.linspace(P2, P3, 20)
-
-V_34 = np.linspace(V2, V1, 100)
-P_34 = P3 * (V2 / V_34)**gamma
-
-V_41 = np.full(20, V1)
-P_41 = np.linspace(P4, P1, 20)
-
-V_total = np.concatenate([V_12, V_23, V_34, V_41])
-P_total = np.concatenate([P_12, P_23, P_34, P_41])
-
-plt.figure(figsize=(8, 6))
-plt.plot(V_total * 1e6, P_total / 1e5, 'r', linewidth=2)
-plt.title('Chu trình Otto lý tưởng - Đồ thị P-V')
-plt.xlabel('Thể tích (cm³)')
-plt.ylabel('Áp suất (atm)')
+# --- Vẽ đồ thị Công suất – Thời gian ---
+plt.figure(figsize=(8, 5))
+plt.plot(time_per_cycle, power_output / 1000, color='blue', linewidth=2)
+plt.title('Công suất theo Thời gian Chu trình (Chu trình Otto)', fontsize=14)
+plt.xlabel('Thời gian chu trình (giây)', fontsize=12)
+plt.ylabel('Công suất (kW)', fontsize=12)
 plt.grid(True)
 plt.tight_layout()
 plt.show()
 
-# --- In kết quả ---
-print(f"Hiệu suất lý thuyết: {eta * 100:.2f} %")
-print(f"Công sinh ra mỗi chu kỳ: {W:.2f} J")
-print(f"Công suất phát ra tại {RPM} RPM: {power_output:.2f} W")
+# in kết quả
+print(f"Hiệu suất lý thuyết η = {eta * 100:.2f}%")
+print(f"Công mỗi chu trình W = {W:.2f} J")
