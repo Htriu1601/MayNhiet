@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+# --- Thông số cơ bản ---
 gamma = 1.4                  # Tỉ số nhiệt dung Cp/Cv cho không khí
 r = 8                        # Tỷ số nén V1/V2
 P1 = 1e5                     # Áp suất ban đầu (Pa)
@@ -11,6 +12,7 @@ Cv = 718                     # Nhiệt dung riêng đẳng tích (J/kg.K)
 m = 1                        # Khối lượng khí giả sử (kg)
 RPM = 3000                   # Tốc độ vòng quay (vòng/phút)
 
+# --- Tính các giá trị trung gian ---
 V2 = V1 / r
 T2 = T1 * r**(gamma - 1)
 T4 = T3 * (1 / r)**(gamma - 1)
@@ -18,14 +20,14 @@ P2 = P1 * (V1 / V2)**gamma
 P3 = P2 * (T3 / T2)
 P4 = P3 * (V2 / V1)**gamma
 
-
+# --- Tính hiệu suất và công suất ---
 Q_in = m * Cv * (T3 - T2)
 Q_out = m * Cv * (T4 - T1)
 W = Q_in - Q_out
 eta = W / Q_in
 power_output = W * (RPM / 60)  # công suất = công mỗi chu kỳ × số chu kỳ/giây
 
-
+# --- Tạo dữ liệu cho đồ thị P-V ---
 V_12 = np.linspace(V1, V2, 100)
 P_12 = P1 * (V1 / V_12)**gamma
 
@@ -52,6 +54,7 @@ plt.grid(True)
 plt.tight_layout()
 plt.show()
 
+# --- In kết quả ---
 print(f"Hiệu suất lý thuyết: {eta * 100:.2f} %")
 print(f"Công sinh ra mỗi chu kỳ: {W:.2f} J")
 print(f"Công suất phát ra tại {RPM} RPM: {power_output:.2f} W")
