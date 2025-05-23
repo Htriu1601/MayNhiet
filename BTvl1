@@ -1,38 +1,32 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
-gamma = 1.4                # Tỷ số Cp/Cv
-r = 8                      # Tỷ số nén
-P1 = 1e5                   # Áp suất ban đầu (Pa)
-V1 = 0.001                 # Thể tích ban đầu (m^3)
-T1 = 300                   # Nhiệt độ ban đầu (K)
-T3 = 2000                  # Nhiệt độ sau khi đốt cháy (K)
-Cv = 718                   # Nhiệt dung riêng đẳng tích (J/kg.K)
-m = 1                      # Khối lượng khí (kg)
 
-V2 = V1 / r
-T2 = T1 * r**(gamma - 1)
-T4 = T3 * (1 / r)**(gamma - 1)
+t = np.linspace(1, 10, 100)
+Q_H = 300 * np.exp(0.8 * t)
+Q_C = 100 + t**2
 
-Q_in = m * Cv * (T3 - T2)
-Q_out = m * Cv * (T4 - T1)
-W = Q_in - Q_out
-eta = W / Q_in
+# Tính công và hiệu suất
+W = Q_H - Q_C
+hieu_suat = W / Q_H
+cong_suat = W / t
 
-RPM_values = np.linspace(1000, 8000, 100)  # Vòng/phút
-time_per_cycle = 60 / RPM_values           # Thời gian mỗi chu trình (giây)
-power_output = W / time_per_cycle          # Công suất (Watt)
+fig, axs = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
 
-# --- Vẽ đồ thị Công suất – Thời gian ---
-plt.figure(figsize=(8, 5))
-plt.plot(time_per_cycle, power_output / 1000, color='blue', linewidth=2)
-plt.title('Công suất theo Thời gian Chu trình (Chu trình Otto)', fontsize=14)
-plt.xlabel('Thời gian chu trình (giây)', fontsize=12)
-plt.ylabel('Công suất (kW)', fontsize=12)
-plt.grid(True)
+# hiệu suất
+axs[0].plot(t, hieu_suat, color='green', label='Hiệu suất (η)')
+axs[0].set_ylabel("Hiệu suất")
+axs[0].set_title("Hiệu suất theo thời gian")
+axs[0].grid(True)
+axs[0].legend()
+
+# công suất
+axs[1].plot(t, cong_suat, color='blue', label='Công suất (W)')
+axs[1].set_xlabel("Thời gian (s)")
+axs[1].set_ylabel("Công suất")
+axs[1].set_title("Công suất theo thời gian")
+axs[1].grid(True)
+axs[1].legend()
+
 plt.tight_layout()
 plt.show()
-
-# in kết quả
-print(f"Hiệu suất lý thuyết η = {eta * 100:.2f}%")
-print(f"Công mỗi chu trình W = {W:.2f} J")
